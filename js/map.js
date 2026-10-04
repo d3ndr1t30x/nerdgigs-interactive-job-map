@@ -6,6 +6,13 @@ const WORLD_HEIGHT = 1000;
 
 function project(latitude, longitude) { return { x: ((longitude + 180) / 360) * WORLD_WIDTH, y: ((90 - latitude) / 180) * WORLD_HEIGHT }; }
 function createSvgElement(name, attributes = {}) { const element = document.createElementNS(SVG_NS, name); Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value)); return element; }
+function ringToPath(ring) { return ring.map(([longitude, latitude], index) => { const point = project(latitude, longitude); return `${index ? 'L' : 'M'}${point.x.toFixed(2)} ${point.y.toFixed(2)}`; }).join(' ') + ' Z'; }
+function geometryToPath(geometry) {
+  if (!geometry) return '';
+  if (geometry.type === 'Polygon') return geometry.coordinates.map(ringToPath).join(' ');
+  if (geometry.type === 'MultiPolygon') return geometry.coordinates.flat().map(ringToPath).join(' ');
+  return '';
+}
 
 export function createMap(elementId) {
   const host = document.getElementById(elementId);
@@ -19,7 +26,12 @@ export function createMap(elementId) {
   const markers = createSvgElement('g', { class: 'local-map-markers' }); svg.append(markers);
   host.replaceChildren(svg);
 
-  fetch('./assets/world-map.svg', { cache: 'force-cache' }).then(response => response.text()).then(markup => { land.innerHTML = markup; }).catch(() => { land.innerHTML = '<text x="1000" y="500" text-anchor="middle" fill="#72807d">World map unavailable</text>'; });
+  fetch('./assets/osm-countries.geojson', { cache: 'force-cache' }).then(response => { if (!response.ok) throw new Error('Boundary data unavailable'); return response.json(); }).then(data => {
+    data.features.forEach(feature => {
+      const path = createSvgElement('path', { class: 'local-map-country', d: geometryToPath(feature.geometry), 'data-country': feature.properties?.tags?.['name:en'] || feature.properties?.tags?.name || '' });
+      land.append(path);
+    });
+  }).catch(() => { land.innerHTML = '<text x="1000" y="500" text-anchor="middle" fill="#72807d">World map unavailable</text>'; });
 
   const view = { centerX: 1000, centerY: 500, scale: 1, minScale: 1, maxScale: 18 };
   const updateViewBox = () => { const rect = host.getBoundingClientRect(); const aspect = Math.max(rect.width / Math.max(rect.height, 1), 1); const width = WORLD_WIDTH / view.scale; const height = width / aspect; view.centerY = Math.max(height / 2, Math.min(WORLD_HEIGHT - height / 2, view.centerY)); view.centerX = Math.max(width / 2, Math.min(WORLD_WIDTH - width / 2, view.centerX)); svg.setAttribute('viewBox', `${view.centerX - width / 2} ${view.centerY - height / 2} ${width} ${height}`); };

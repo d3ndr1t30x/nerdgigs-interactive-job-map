@@ -10,7 +10,7 @@ Because browsers block `fetch()` from `file://` pages, serve the folder with any
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000`. The browser loads a bundled SVG world map and a bundled city-search index. No map tile, map JavaScript, or geocoding API is requested at runtime.
+Open `http://localhost:8000`. The browser loads a bundled OpenStreetMap-derived country-boundary dataset and a bundled city-search index. No map tile, map JavaScript, or geocoding API is requested at runtime.
 
 ## Project map
 
@@ -21,7 +21,7 @@ Open `http://localhost:8000`. The browser loads a bundled SVG world map and a bu
 - `js/map.js` — local SVG map, pan/zoom, and marker-cluster rendering.
 - `js/search.js` — bundled city/capital search index.
 - `js/config.js` — data and map configuration.
-- `assets/world-map.svg` — bundled world silhouette used by the map.
+- `assets/osm-countries.geojson` — bundled, simplified OSM-derived country boundaries for the global overview.
 - `js/services/location-data.js` — future relocation-data boundary.
 - `data/jobs.json` — local mock normalized feed.
 
@@ -52,6 +52,8 @@ If the app is published under a repository subpath, keep data and module URLs re
 
 ## External services and licensing
 
-- The map has no runtime map-tile, map-library, or geocoding dependency. Its bundled SVG is a deliberately lightweight world silhouette, not a street-level navigation map.
+- The map has no runtime map-tile, map-library, or geocoding dependency. Its bundled boundaries are derived from OpenStreetMap administrative data and are intended for global country/region overview, not street-level navigation. The visible map credit and project documentation satisfy OpenStreetMap attribution requirements.
+- Boundary source: [OSM Countries GeoJSON](https://github.com/Zaczero/osm-countries-geojson), generated from OpenStreetMap data. The bundled overview file is `osm-countries-0-01.geojson` from the source archive.
+- OpenStreetMap data is © OpenStreetMap contributors and available under the [Open Database License (ODbL)](https://www.openstreetmap.org/copyright).
 - The only external data connection is the server-side GitHub Action that polls NerdGigs RSS/XML hourly and commits `data/jobs.json`.
 - Job links point to NerdGigs and are mock examples until replaced by the real normalized feed.
