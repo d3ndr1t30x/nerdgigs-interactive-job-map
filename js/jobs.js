@@ -1,0 +1,3 @@
+export async function loadJobs(url) { const response = await fetch(url); if (!response.ok) throw new Error(`Could not load jobs (${response.status})`); const jobs = await response.json(); return jobs.map(normalizeJob); }
+export function normalizeJob(job) { return { ...job, workMode: job.workMode || (job.remote ? 'remote' : 'onsite'), remote: Boolean(job.remote), hasCoordinates: Number.isFinite(job.latitude) && Number.isFinite(job.longitude) }; }
+export function filterJobs(jobs, filters) { return jobs.filter(job => (filters.mode === 'all' || job.workMode === filters.mode) && (filters.category === 'all' || job.category === filters.category) && (filters.employmentType === 'all' || job.employmentType === filters.employmentType)); }

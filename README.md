@@ -1,0 +1,53 @@
+# NerdGigs Interactive Job Map
+
+A small, static, map-first companion to [NerdGigs](https://www.nerdgigs.com/). It loads normalized job records from `data/jobs.json`, maps jobs with coordinates, keeps global remote listings in the count without inventing locations, and links every preview back to its canonical NerdGigs listing.
+
+## Run locally
+
+Because browsers block `fetch()` from `file://` pages, serve the folder with any static server. For example, from the project root:
+
+```bash
+python -m http.server 8000
+```
+
+Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster from unpkg, OpenStreetMap tiles, and the public Nominatim geocoder.
+
+## Project map
+
+- `index.html` — semantic shell and controls.
+- `css/styles.css` — NerdGigs-matching design tokens and responsive UI.
+- `js/app.js` — state, UI events, filtering, and rendering orchestration.
+- `js/jobs.js` — data loading, normalization, and filtering.
+- `js/map.js` — Leaflet map and marker-cluster rendering.
+- `js/search.js` — replaceable geocoding abstraction.
+- `js/config.js` — data, tile, and geocoder configuration.
+- `js/services/location-data.js` — future relocation-data boundary.
+- `data/jobs.json` — local mock normalized feed.
+
+## Mock data and feed integration
+
+`data/jobs.json` is intentionally shaped like the frontend's long-term contract. Add fields to each record, normalize them in `js/jobs.js`, and render them in the preview in `js/app.js` as needed. Jobs without numeric `latitude` and `longitude` are treated as non-mappable (useful for “Anywhere in the World” roles).
+
+The browser should not fetch NerdGigs RSS/XML directly unless the feed explicitly supports the required CORS policy. Recommended sync options are:
+
+1. Have the existing NerdGigs importer periodically generate this JSON file.
+2. Use a Cloudflare Worker to fetch and transform RSS/XML server-side, then publish JSON.
+3. Run another scheduled server-side XML → JSON process and deploy its output.
+
+Replace `CONFIG.dataUrl` in `js/config.js` when the normalized feed has a new location. Do not put private feed credentials in this repository.
+
+## GitHub Pages and custom domain
+
+1. Push the project to a GitHub repository.
+2. In **Settings → Pages**, select **Deploy from a branch**, the repository's default branch, and `/ (root)`.
+3. The static site will be available at the generated Pages URL.
+4. To use `map.nerdgigs.com`, add a `CNAME` file containing `map.nerdgigs.com`, configure the DNS provider with the GitHub Pages records GitHub provides, and set the custom domain in **Settings → Pages**. Enable HTTPS after DNS verification.
+
+If the app is published under a repository subpath, keep data and module URLs relative as they are now; this makes both root-domain and project-page hosting work.
+
+## External services and licensing
+
+- Leaflet and Leaflet.markercluster are open-source libraries loaded from unpkg.
+- Map tiles come from OpenStreetMap contributors. Keep the visible attribution in place and review tile usage policy before production scale.
+- Location search uses the public Nominatim service. It is rate-limited and has usage requirements; for higher volume, configure a compliant provider behind `js/search.js` and do not expose private keys in client code.
+- Job links point to NerdGigs and are mock examples until replaced by the real normalized feed.
