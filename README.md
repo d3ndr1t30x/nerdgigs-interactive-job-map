@@ -1,6 +1,6 @@
 # NerdGigs Interactive Job Map
 
-A small, static, map-first companion to [NerdGigs](https://www.nerdgigs.com/). It loads normalized job records from `data/jobs.json`, maps jobs with coordinates, keeps global remote listings in the count without inventing locations, and links every preview back to its canonical NerdGigs listing.
+A small, static, map-first companion to [NerdGigs](https://www.nerdgigs.com/). It loads normalized job records from `data/jobs.json`, maps jobs with coordinates, keeps global remote listings in the count without inventing locations, and links every preview back to its canonical NerdGigs listing. The UI uses a violet accent palette to match the updated NerdGigs visual direction.
 
 ## Run locally
 
@@ -28,7 +28,9 @@ Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster fro
 
 `data/jobs.json` is intentionally shaped like the frontend's long-term contract. Add fields to each record, normalize them in `js/jobs.js`, and render them in the preview in `js/app.js` as needed. Jobs without numeric `latitude` and `longitude` are treated as non-mappable (useful for “Anywhere in the World” roles).
 
-The browser should not fetch NerdGigs RSS/XML directly unless the feed explicitly supports the required CORS policy. Recommended sync options are:
+The repository includes `.github/workflows/sync-feed.yml`. Once GitHub Actions is enabled, it fetches `https://www.nerdgigs.com/jobs.rss` hourly, falls back to `https://www.nerdgigs.com/jobs.xml`, normalizes the items with `scripts/sync-feed.py`, and commits updated `data/jobs.json`. GitHub Pages then serves the latest committed data without requiring the browser to bypass CORS. Run it immediately with **Actions → Sync NerdGigs feed → Run workflow**.
+
+The browser should not fetch NerdGigs RSS/XML directly: the current feed does not expose browser CORS headers. The included GitHub Action is the recommended static-site sync. Other valid options are:
 
 1. Have the existing NerdGigs importer periodically generate this JSON file.
 2. Use a Cloudflare Worker to fetch and transform RSS/XML server-side, then publish JSON.

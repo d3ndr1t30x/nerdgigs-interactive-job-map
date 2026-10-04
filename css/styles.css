@@ -4,8 +4,9 @@
   --color-surface-soft: #f7f5f2;
   --color-text: #171717;
   --color-muted: #68645f;
-  --color-accent: #ef5b5b;
-  --color-accent-dark: #c9444b;
+  --color-accent: #7c3aed;
+  --color-accent-dark: #6d28d9;
+  --color-accent-soft: #f3eefe;
   --color-border: #e7e3df;
   --color-map: #dfe8e4;
   --shadow-soft: 0 12px 35px rgba(42, 31, 24, .12);
@@ -51,7 +52,7 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
 .filter-label { margin-right: 3px; color: var(--color-muted); font-size: 12px; font-weight: 700; }
 .filter-chip { border: 1px solid var(--color-border); border-radius: var(--radius-pill); padding: 7px 12px; background: var(--color-surface); color: var(--color-muted); cursor: pointer; font-size: 12px; font-weight: 650; }
 .filter-chip:hover { border-color: #c9c2bc; color: var(--color-text); }
-.filter-chip.is-active { border-color: var(--color-text); background: var(--color-text); color: white; }
+.filter-chip.is-active { border-color: var(--color-accent); background: var(--color-accent); color: white; }
 .filter-toggle { margin-left: auto; }
 .filter-toggle span { font-size: 15px; vertical-align: -1px; }
 .advanced-filters { display: flex; gap: 10px; padding-top: 12px; }
