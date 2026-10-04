@@ -61,6 +61,11 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
 
 .map-stage { position: relative; flex: 1; min-height: min(660px, calc(100vh - 304px)); margin: 0 16px; overflow: hidden; border-radius: 16px 16px 0 0; background: var(--color-map); box-shadow: var(--shadow-soft); }
 #map { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--color-map); }
+/* Keep the essential Leaflet layout intact even if its CDN stylesheet is slow. */
+.leaflet-container { overflow: hidden; }
+.leaflet-map-pane, .leaflet-tile-pane, .leaflet-overlay-pane, .leaflet-shadow-pane, .leaflet-marker-pane, .leaflet-tooltip-pane, .leaflet-popup-pane { position: absolute; inset: 0; }
+.leaflet-tile-container { position: absolute; left: 0; top: 0; }
+.leaflet-tile { position: absolute; left: 0; top: 0; max-width: none !important; max-height: none !important; user-select: none; }
 .leaflet-container { font-family: var(--font-body); background: var(--color-map); }
 .leaflet-control-zoom { margin: 18px !important; border: 0 !important; box-shadow: var(--shadow-soft) !important; }
 .leaflet-control-zoom a { color: var(--color-text) !important; border: 0 !important; background: rgba(255,255,255,.95) !important; }
