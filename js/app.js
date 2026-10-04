@@ -6,7 +6,7 @@ import { createMap, renderMarkers } from './map.js';
 const state = { jobs: [], filters: { mode: 'all', includeRemote: true, category: 'all', employmentType: 'all', keyword: '' }, selectedJobs: [], sort: 'relevance' };
 const els = {
   summary: document.querySelector('#result-summary'), category: document.querySelector('#category-filter'), employment: document.querySelector('#employment-filter'),
-  preview: document.querySelector('#job-preview'), previewContent: document.querySelector('#preview-content'), previewCount: document.querySelector('#preview-result-count'), previewSort: document.querySelector('#preview-sort'),
+  preview: document.querySelector('#job-preview'), previewContent: document.querySelector('#preview-content'), previewCount: document.querySelector('#preview-result-count'), previewSort: document.querySelector('#preview-sort'), previewCollapse: document.querySelector('#preview-collapse'),
   location: document.querySelector('#location-query'), keyword: document.querySelector('#keyword-query'), searchStatus: document.querySelector('#search-status'), searchButton: document.querySelector('.search-button'),
   includeRemote: document.querySelector('#include-remote'), remoteButton: document.querySelector('#show-remote-results'), remoteButtonCount: document.querySelector('#remote-button-count'), remoteResults: document.querySelector('#remote-results'), remoteCount: document.querySelector('#remote-results-count'), remoteList: document.querySelector('#remote-results-list')
 };
@@ -34,7 +34,7 @@ function jobCard(job, compact = false) {
   const open = () => window.open(job.url, '_blank', 'noopener'); card.addEventListener('click', event => { if (!event.target.closest('a')) open(); }); card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); } });
   return card;
 }
-function selectJobs(jobs) { if (!jobs.length) return; state.selectedJobs = jobs; els.preview.hidden = false; els.previewCount.textContent = `${jobs.length} job${jobs.length === 1 ? '' : 's'}${jobs.length > 1 ? ' in this cluster' : ''}`; renderPreviewJobs(); if (jobs.length === 1) mapState.map.panTo([jobs[0].latitude, jobs[0].longitude], { animate: true }); }
+function selectJobs(jobs) { if (!jobs.length) return; state.selectedJobs = jobs; els.preview.hidden = false; els.preview.classList.remove('is-collapsed'); els.previewCollapse.setAttribute('aria-expanded', 'true'); els.previewCollapse.textContent = 'Collapse'; els.previewCount.textContent = `${jobs.length} job${jobs.length === 1 ? '' : 's'}${jobs.length > 1 ? ' in this cluster' : ''}`; renderPreviewJobs(); if (jobs.length === 1) mapState.map.panTo([jobs[0].latitude, jobs[0].longitude], { animate: true }); }
 function renderPreviewJobs() { els.previewContent.replaceChildren(...sortedJobs(state.selectedJobs).map(job => jobCard(job))); }
 function renderRemoteResults() { const jobs = sortedJobs(matchingRemoteJobs()); els.remoteCount.textContent = `${jobs.length} remote role${jobs.length === 1 ? '' : 's'} · Remote roles are not pinned to a city.`; els.remoteList.replaceChildren(...jobs.map(job => jobCard(job, true))); }
 function setActive(button) { document.querySelectorAll('.filter-chip[data-mode]').forEach(chip => { const active = chip === button; chip.classList.toggle('is-active', active); chip.setAttribute('aria-pressed', String(active)); }); }
@@ -47,6 +47,7 @@ els.employment.addEventListener('change', () => { state.filters.employmentType =
 els.previewSort.addEventListener('change', () => { state.sort = els.previewSort.value; renderPreviewJobs(); if (!els.remoteResults.hidden) renderRemoteResults(); });
 document.querySelector('#more-filters').addEventListener('click', event => { const expanded = event.currentTarget.getAttribute('aria-expanded') === 'true'; event.currentTarget.setAttribute('aria-expanded', String(!expanded)); document.querySelector('#advanced-filters').hidden = expanded; });
 document.querySelector('#preview-close').addEventListener('click', () => { els.preview.hidden = true; });
+els.previewCollapse.addEventListener('click', () => { const expanded = els.previewCollapse.getAttribute('aria-expanded') === 'true'; els.preview.classList.toggle('is-collapsed', expanded); els.previewCollapse.setAttribute('aria-expanded', String(!expanded)); els.previewCollapse.textContent = expanded ? 'Expand' : 'Collapse'; });
 document.querySelector('#show-remote-results').addEventListener('click', () => { els.remoteResults.hidden = false; renderRemoteResults(); });
 document.querySelector('#close-remote-results').addEventListener('click', () => { els.remoteResults.hidden = true; });
 document.querySelector('#reset-view').addEventListener('click', () => { els.preview.hidden = true; mapState.map.setView(CONFIG.map.center, mapState.map.getMinZoom()); });
