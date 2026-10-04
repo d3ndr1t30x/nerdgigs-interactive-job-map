@@ -6,8 +6,10 @@ export function createMap(elementId) {
     zoom: CONFIG.map.zoom,
     minZoom: CONFIG.map.minZoom,
     maxZoom: CONFIG.map.maxZoom,
+    maxBounds: CONFIG.map.bounds,
+    maxBoundsViscosity: 1,
     zoomControl: true,
-    worldCopyJump: true,
+    worldCopyJump: false,
     zoomAnimation: true,
     fadeAnimation: true,
     markerZoomAnimation: true,
@@ -25,6 +27,8 @@ export function createMap(elementId) {
     attribution: CONFIG.tiles.attribution,
     maxZoom: CONFIG.map.maxZoom,
     maxNativeZoom: 19,
+    noWrap: true,
+    bounds: CONFIG.map.bounds,
     updateWhenIdle: false,
     updateWhenZooming: true,
     keepBuffer: 4,
@@ -37,9 +41,15 @@ export function createMap(elementId) {
   // Leaflet needs an explicit size refresh when a responsive/flex layout has
   // finished settling. Without this, only newly panned tile regions appear.
   const refreshSize = () => map.invalidateSize({ pan: false, animate: false });
-  map.whenReady(() => { refreshSize(); requestAnimationFrame(refreshSize); setTimeout(refreshSize, 250); });
+  const fitSingleWorld = () => {
+    refreshSize();
+    const worldFitZoom = map.getBoundsZoom(CONFIG.map.bounds, false);
+    if (Number.isFinite(worldFitZoom) && map.getMinZoom() !== worldFitZoom) map.setMinZoom(worldFitZoom);
+    if (Number.isFinite(worldFitZoom) && map.getZoom() < worldFitZoom) map.setZoom(worldFitZoom, { animate: false });
+  };
+  map.whenReady(() => { fitSingleWorld(); requestAnimationFrame(fitSingleWorld); setTimeout(fitSingleWorld, 250); });
   if (window.ResizeObserver) new ResizeObserver(refreshSize).observe(document.getElementById(elementId));
-  window.addEventListener('resize', refreshSize, { passive: true });
+  window.addEventListener('resize', fitSingleWorld, { passive: true });
   tiles.on('load', refreshSize);
 
   return { map, cluster };

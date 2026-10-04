@@ -37,7 +37,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .header-cta { padding: 11px 16px; border-radius: var(--radius-sm); background: var(--color-accent); color: white; text-decoration: none; }
 .header-cta:hover, .search-button:hover, .view-job:hover { background: var(--color-accent-dark); }
 
-.app-shell { display: flex; flex-direction: column; min-height: calc(100vh - 119px); }
+.app-shell { display: flex; flex-direction: column; height: calc(100dvh - 119px); min-height: 0; }
 .map-toolbar { position: relative; z-index: 5; width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 27px 0 18px; }
 .toolbar-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 17px; }
 .eyebrow { margin: 0 0 7px; color: var(--color-accent-dark); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
@@ -59,7 +59,7 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
 .advanced-filters label { display: flex; align-items: center; gap: 8px; color: var(--color-muted); font-size: 12px; font-weight: 650; }
 .advanced-filters select { border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 7px 25px 7px 9px; background: white; color: var(--color-text); }
 
-.map-stage { position: relative; flex: 1; min-height: min(660px, calc(100vh - 304px)); margin: 0 16px; overflow: hidden; border-radius: 16px 16px 0 0; background: var(--color-map); box-shadow: var(--shadow-soft); }
+.map-stage { position: relative; flex: 1; min-height: 0; margin: 0 16px; overflow: hidden; border-radius: 16px 16px 0 0; background: var(--color-map); box-shadow: var(--shadow-soft); }
 #map { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--color-map); }
 /* Keep the essential Leaflet layout intact even if its CDN stylesheet is slow. */
 .leaflet-container { overflow: hidden; }
@@ -119,7 +119,8 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
   .filter-label { width: 100%; margin-bottom: 1px; }
   .filter-chip { padding: 7px 10px; }
   .filter-toggle { margin-left: 0; }
-  .map-stage { min-height: calc(100vh - 280px); margin: 0; border-radius: 0; }
+  .app-shell { height: calc(100dvh - 101px); }
+  .map-stage { min-height: 0; margin: 0; border-radius: 0; }
   .map-legend { left: 10px; bottom: 10px; }
   .locate-button { right: 10px; bottom: 10px; }
   .locate-button span { display: none; }
