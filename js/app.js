@@ -4,14 +4,29 @@ import { geocodeLocation } from './search.js';
 import { createMap, renderMarkers } from './map.js';
 
 const state = { jobs: [], filters: { mode: 'all', category: 'all', employmentType: 'all' } };
-const els = { summary: document.querySelector('#result-summary'), globalCount: document.querySelector('#global-count'), category: document.querySelector('#category-filter'), employment: document.querySelector('#employment-filter'), preview: document.querySelector('#job-preview'), previewMode: document.querySelector('#preview-mode'), previewTitle: document.querySelector('#preview-title'), previewCompany: document.querySelector('#preview-company'), previewLocation: document.querySelector('#preview-location'), previewMeta: document.querySelector('#preview-meta'), previewLink: document.querySelector('#preview-link') };
+const els = { summary: document.querySelector('#result-summary'), globalCount: document.querySelector('#global-count'), category: document.querySelector('#category-filter'), employment: document.querySelector('#employment-filter'), preview: document.querySelector('#job-preview'), previewContent: document.querySelector('#preview-content') };
 const mapState = createMap('map');
 
 function modeLabel(mode) { return mode === 'onsite' ? 'On-site' : mode.charAt(0).toUpperCase() + mode.slice(1); }
-function updateSummary(jobs) { const mapped = jobs.filter(job => job.hasCoordinates).length; const global = jobs.filter(job => !job.hasCoordinates).length; els.summary.textContent = `${mapped} mapped job${mapped === 1 ? '' : 's'}${global ? ` · ${global} global remote` : ''}`; els.globalCount.textContent = `${global} global remote`; }
+function updateSummary(jobs) { const mapped = jobs.filter(job => job.hasCoordinates).length; const approximate = jobs.filter(job => job.geographicScope === 'approximate').length; els.summary.textContent = `${mapped} job${mapped === 1 ? '' : 's'} on the map${approximate ? ` · ${approximate} approximate location${approximate === 1 ? '' : 's'}` : ''}`; els.globalCount.textContent = `${approximate} approximate locations`; }
 function populateSelect(select, values) { values.sort().forEach(value => { const option = document.createElement('option'); option.value = value; option.textContent = value; select.append(option); }); }
-function render() { const visible = filterJobs(state.jobs, state.filters); renderMarkers(mapState, visible, selectJob); updateSummary(visible); }
-function selectJob(job) { els.preview.hidden = false; els.previewMode.textContent = `${modeLabel(job.workMode)} · ${job.category}`; els.previewTitle.textContent = job.title; els.previewCompany.textContent = job.company; els.previewLocation.textContent = job.location; els.previewMeta.textContent = `${job.salary} · ${job.employmentType}`; els.previewLink.href = job.url; if (job.hasCoordinates) mapState.map.panTo([job.latitude, job.longitude], { animate: true }); }
+function render() { const visible = filterJobs(state.jobs, state.filters); renderMarkers(mapState, visible, selectJobs, selectJobs); updateSummary(visible); }
+function selectJobs(jobs) {
+  if (!jobs.length) return;
+  els.preview.hidden = false;
+  els.previewContent.replaceChildren();
+  const heading = document.createElement('p'); heading.className = 'preview-result-count'; heading.textContent = `${jobs.length} job${jobs.length === 1 ? '' : 's'} at this location`; els.previewContent.append(heading);
+  jobs.forEach(job => {
+    const card = document.createElement('article'); card.className = 'preview-job-card';
+    const kicker = document.createElement('p'); kicker.className = 'preview-kicker'; kicker.textContent = `${modeLabel(job.workMode)} · ${job.category}`;
+    const title = document.createElement('h2'); title.textContent = job.title;
+    const company = document.createElement('p'); company.className = 'preview-company'; company.textContent = job.company;
+    const details = document.createElement('dl'); details.className = 'preview-details'; details.innerHTML = `<div><dt>Location</dt><dd>${job.location}</dd></div><div><dt>Details</dt><dd>${job.salary} · ${job.employmentType}</dd></div>`;
+    const link = document.createElement('a'); link.className = 'view-job'; link.href = job.url; link.target = '_blank'; link.rel = 'noopener'; link.textContent = 'View on NerdGigs ↗';
+    card.append(kicker, title, company, details, link); els.previewContent.append(card);
+  });
+  if (jobs.length === 1 && jobs[0].hasCoordinates) mapState.map.panTo([jobs[0].latitude, jobs[0].longitude], { animate: true });
+}
 function setActive(button) { document.querySelectorAll('.filter-chip[data-mode]').forEach(chip => { const active = chip === button; chip.classList.toggle('is-active', active); chip.setAttribute('aria-pressed', String(active)); }); }
 
 document.querySelectorAll('.filter-chip[data-mode]').forEach(button => button.addEventListener('click', () => { state.filters.mode = button.dataset.mode; setActive(button); render(); }));

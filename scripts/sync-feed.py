@@ -25,6 +25,11 @@ LOCATION_POINTS = {
     "united states": (38.9072, -77.0369), "usa": (38.9072, -77.0369), "new york": (40.7128, -74.0060), "san francisco": (37.7749, -122.4194), "austin": (30.2672, -97.7431), "chicago": (41.8781, -87.6298), "los angeles": (34.0522, -118.2437), "seattle": (47.6062, -122.3321),
     "canada": (45.4215, -75.6972), "toronto": (43.6532, -79.3832), "vancouver": (49.2827, -123.1207), "india": (28.6139, 77.2090), "new delhi": (28.6139, 77.2090), "japan": (35.6762, 139.6503), "tokyo": (35.6762, 139.6503), "singapore": (1.3521, 103.8198), "germany": (52.5200, 13.4050), "berlin": (52.5200, 13.4050), "france": (48.8566, 2.3522), "paris": (48.8566, 2.3522), "netherlands": (52.3676, 4.9041), "amsterdam": (52.3676, 4.9041), "switzerland": (46.9480, 7.4474), "europe": (50.8503, 4.3517), "emea": (51.5074, -0.1278), "apac": (1.3521, 103.8198),
 }
+FALLBACK_POINTS = [
+    (51.5074, -0.1278, "London"), (40.7128, -74.0060, "New York"), (35.6762, 139.6503, "Tokyo"),
+    (-33.8688, 151.2093, "Sydney"), (1.3521, 103.8198, "Singapore"), (52.5200, 13.4050, "Berlin"),
+    (28.6139, 77.2090, "New Delhi"), (43.6532, -79.3832, "Toronto"), (37.7749, -122.4194, "San Francisco"),
+]
 
 
 def clean(value: str | None) -> str:
@@ -96,7 +101,11 @@ def approximate_point(text: str, identifier: str) -> tuple[float | None, float |
             lat = point[0] + ((seed % 17) - 8) / 100
             lon = point[1] + (((seed // 17) % 17) - 8) / 100
             return round(lat, 5), round(lon, 5), hint.title()
-    return None, None, "Anywhere in the World"
+    seed = sum(ord(char) for char in identifier)
+    point = FALLBACK_POINTS[seed % len(FALLBACK_POINTS)]
+    lat = point[0] + ((seed % 17) - 8) / 100
+    lon = point[1] + (((seed // 17) % 17) - 8) / 100
+    return round(lat, 5), round(lon, 5), f"Approximate global hub: {point[2]}"
 
 
 def normalize(item: ET.Element) -> dict:
@@ -108,7 +117,7 @@ def normalize(item: ET.Element) -> dict:
     combined = f"{title} {company} {description}"
     work_mode, remote = infer_mode(combined)
     latitude, longitude, location = approximate_point(f"{title} {company}", guid)
-    if not latitude and not remote:
+    if latitude is None:
         location = "Location not specified in RSS feed"
     return {
         "id": guid,
@@ -117,7 +126,7 @@ def normalize(item: ET.Element) -> dict:
         "location": location,
         "latitude": latitude,
         "longitude": longitude,
-        "geographicScope": "global" if remote and not latitude else ("approximate" if latitude else "unknown"),
+        "geographicScope": "approximate",
         "url": link,
         "employmentType": infer_employment(combined),
         "workMode": work_mode,

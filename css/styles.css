@@ -89,10 +89,12 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
 .locate-button:hover { background: white; }
 .map-attribution { right: 5px; bottom: 2px; color: #5b625e; font-size: 10px; }
 .map-attribution a { color: inherit; }
-.job-preview { position: absolute; top: 22px; right: 22px; z-index: 600; width: min(330px, calc(100% - 44px)); padding: 23px; border: 1px solid rgba(0,0,0,.08); border-radius: 13px; background: rgba(255,255,255,.97); box-shadow: var(--shadow-soft); }
+.job-preview { position: absolute; top: 50%; right: 22px; z-index: 600; width: min(380px, calc(100% - 44px)); max-height: calc(100% - 44px); overflow: hidden auto; padding: 23px; border: 1px solid rgba(0,0,0,.08); border-radius: 13px; background: rgba(255,255,255,.97); box-shadow: var(--shadow-soft); transform: translateY(-50%); }
 .preview-close { position: absolute; top: 10px; right: 12px; width: 27px; height: 27px; border: 0; border-radius: 50%; background: var(--color-surface-soft); color: var(--color-muted); cursor: pointer; font-size: 21px; line-height: 1; }
 .preview-kicker { margin: 0 0 10px; color: var(--color-accent-dark); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.job-preview h2 { max-width: 250px; margin: 0 0 6px; font-size: 20px; line-height: 1.12; letter-spacing: -.04em; }
+.preview-result-count { margin: 0 0 14px; color: var(--color-muted); font-size: 12px; font-weight: 750; }
+.preview-job-card + .preview-job-card { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--color-border); }
+.job-preview h2 { max-width: 290px; margin: 0 0 6px; font-size: 20px; line-height: 1.12; letter-spacing: -.04em; }
 .preview-company { margin: 0 0 19px; color: var(--color-muted); font-size: 13px; font-weight: 650; }
 .preview-details { margin: 0 0 21px; }
 .preview-details div { display: grid; grid-template-columns: 74px 1fr; gap: 8px; padding: 8px 0; border-top: 1px solid var(--color-border); }
@@ -121,7 +123,7 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
   .map-legend { left: 10px; bottom: 10px; }
   .locate-button { right: 10px; bottom: 10px; }
   .locate-button span { display: none; }
-  .job-preview { top: auto; right: 0; bottom: 0; width: 100%; border-width: 1px 0 0; border-radius: 16px 16px 0 0; padding: 19px 20px 20px; }
+  .job-preview { top: auto; right: 0; bottom: 0; width: 100%; max-height: 72%; border-width: 1px 0 0; border-radius: 16px 16px 0 0; padding: 19px 20px 20px; transform: none; }
   .preview-details { margin-bottom: 14px; }
   .site-footer { padding: 13px 16px; }
   .footer-note { display: none; }
