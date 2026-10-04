@@ -63,6 +63,8 @@ def infer_title_and_company(raw_title: str) -> tuple[str, str]:
 
 def infer_mode(text: str) -> tuple[str, bool]:
     lower = text.lower()
+    if re.match(r"^\s*remote\b", lower):
+        return "remote", True
     if re.search(r"\bhybrid\b", lower):
         return "hybrid", False
     if re.search(r"\b(on[- ]?site|onsite|office[- ]based)\b", lower):

@@ -25,6 +25,7 @@ export function createMap(elementId) {
 
   const tiles = L.tileLayer(CONFIG.tiles.url, {
     attribution: CONFIG.tiles.attribution,
+    subdomains: CONFIG.tiles.subdomains,
     maxZoom: CONFIG.map.maxZoom,
     maxNativeZoom: 19,
     noWrap: true,
@@ -56,8 +57,8 @@ export function createMap(elementId) {
 }
 export function renderMarkers(mapState, jobs, onSelect, onClusterSelect) {
   mapState.cluster.clearLayers();
-  jobs.filter(job => job.hasCoordinates).forEach(job => {
-    const icon = L.divIcon({ className: `job-pin job-pin-${job.workMode}`, iconSize: [16, 16], iconAnchor: [8, 8], popupAnchor: [0, -10] });
+  jobs.filter(job => job.hasCoordinates && !job.remote).forEach(job => {
+    const icon = L.divIcon({ className: `job-pin job-pin-${job.workMode} ${job.geographicScope === 'approximate' ? 'job-pin-approximate' : ''}`, iconSize: [16, 16], iconAnchor: [8, 8], popupAnchor: [0, -10] });
     const marker = L.marker([job.latitude, job.longitude], { icon, title: job.title, alt: `${job.title} at ${job.company}`, job });
     marker.on('click', () => onSelect([job]));
     mapState.cluster.addLayer(marker);

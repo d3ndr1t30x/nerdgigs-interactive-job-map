@@ -6,7 +6,7 @@
     <meta name="description" content="Explore NerdGigs STEM jobs by location." />
     <title>NerdGigs Map — Explore jobs by location</title>
     <link rel="preconnect" href="https://unpkg.com" />
-    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+    <link rel="preconnect" href="https://basemaps.cartocdn.com" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -16,58 +16,32 @@
     <a class="skip-link" href="#map">Skip to map</a>
     <header class="site-header">
       <a class="brand" href="https://www.nerdgigs.com/" aria-label="NerdGigs home"><span class="brand-mark">N</span><span>NerdGigs</span></a>
-      <nav class="main-nav" aria-label="Main navigation">
-        <a href="https://www.nerdgigs.com/jobs/">Browse jobs</a>
-        <a class="header-cta" href="https://www.nerdgigs.com/post-a-job/">Post a job <span aria-hidden="true">↗</span></a>
-      </nav>
+      <nav class="main-nav" aria-label="Main navigation"><a href="https://www.nerdgigs.com/jobs/">Browse jobs</a><a class="header-cta" href="https://www.nerdgigs.com/post-a-job/">Post a job <span aria-hidden="true">↗</span></a></nav>
     </header>
-
     <main class="app-shell">
       <section class="map-toolbar" aria-label="Map search and filters">
-        <div class="toolbar-heading">
-          <div>
-            <p class="eyebrow">NerdGigs Map</p>
-            <h1>Where are the jobs?</h1>
-          </div>
-          <p class="map-count" id="result-summary" role="status">Loading jobs…</p>
-        </div>
-        <form class="location-search" id="location-search">
-          <label class="sr-only" for="location-query">Search a city or location</label>
-          <span class="search-icon" aria-hidden="true">⌕</span>
-          <input id="location-query" name="location" type="search" placeholder="Search a city or location…" autocomplete="off" />
+        <div class="toolbar-heading"><div><p class="eyebrow">NerdGigs Map</p><h1>Where are the jobs?</h1></div><p class="map-count" id="result-summary" role="status">Loading jobs…</p></div>
+        <form class="search-grid" id="location-search">
+          <label class="search-field"><span class="search-icon" aria-hidden="true">⌕</span><span class="sr-only">Search a city or location</span><input id="location-query" name="location" type="search" placeholder="Search a city or location…" autocomplete="off" /></label>
+          <label class="search-field"><span class="search-icon keyword-icon" aria-hidden="true">⌕</span><span class="sr-only">Search job title or keyword</span><input id="keyword-query" name="keyword" type="search" placeholder="Job title or keyword…" autocomplete="off" /></label>
           <button class="search-button" type="submit">Search</button>
         </form>
+        <p class="search-status" id="search-status" role="status" aria-live="polite"></p>
         <div class="filter-row" id="filter-row" aria-label="Job type filters">
-          <span class="filter-label">Work mode</span>
-          <button class="filter-chip is-active" type="button" data-mode="all" aria-pressed="true">All jobs</button>
-          <button class="filter-chip" type="button" data-mode="remote" aria-pressed="false">Remote</button>
-          <button class="filter-chip" type="button" data-mode="hybrid" aria-pressed="false">Hybrid</button>
-          <button class="filter-chip" type="button" data-mode="onsite" aria-pressed="false">On-site</button>
-          <button class="filter-chip filter-toggle" id="more-filters" type="button" aria-expanded="false" aria-controls="advanced-filters">More filters <span aria-hidden="true">＋</span></button>
+          <span class="filter-label">Work mode</span><button class="filter-chip is-active" type="button" data-mode="all" aria-pressed="true">All jobs</button><button class="filter-chip" type="button" data-mode="hybrid" aria-pressed="false">Hybrid</button><button class="filter-chip" type="button" data-mode="onsite" aria-pressed="false">On-site</button>
+          <label class="remote-toggle"><input id="include-remote" type="checkbox" checked /> <span>Include remote roles</span></label><button class="remote-list-button" id="show-remote-results" type="button">Remote, anywhere <span id="remote-button-count"></span></button><button class="filter-chip filter-toggle" id="more-filters" type="button" aria-expanded="false" aria-controls="advanced-filters">More filters <span aria-hidden="true">＋</span></button>
         </div>
-        <div class="advanced-filters" id="advanced-filters" hidden>
-          <label>Category <select id="category-filter"><option value="all">All categories</option></select></label>
-          <label>Job type <select id="employment-filter"><option value="all">All job types</option></select></label>
-        </div>
+        <div class="advanced-filters" id="advanced-filters" hidden><label>Category <select id="category-filter"><option value="all">All categories</option></select></label><label>Job type <select id="employment-filter"><option value="all">All job types</option></select></label></div>
       </section>
-
       <section class="map-stage" aria-label="Interactive job map">
-        <div id="map" role="application" aria-label="Map showing NerdGigs jobs"></div>
-        <div class="map-legend" aria-label="Map information">
-          <span class="legend-dot legend-onsite" aria-hidden="true"></span><span>On-site</span><span class="legend-dot legend-remote" aria-hidden="true"></span><span>Remote</span><span class="legend-dot legend-hybrid" aria-hidden="true"></span><span>Hybrid</span><span class="legend-divider"></span><span id="global-count">0 global remote</span>
-        </div>
+        <div id="map" role="application" aria-label="Map showing geographically located NerdGigs jobs"></div>
+        <div class="map-legend" aria-label="Map marker key"><span class="legend-dot legend-onsite" aria-hidden="true"></span><span>On-site</span><span class="legend-dot legend-hybrid" aria-hidden="true"></span><span>Hybrid</span><span class="legend-dot legend-approx" aria-hidden="true"></span><span>Approximate</span></div>
         <button class="locate-button" id="reset-view" type="button" title="Show all mapped jobs" aria-label="Show all mapped jobs">⌖ <span>Show all</span></button>
-        <aside class="job-preview" id="job-preview" aria-live="polite" aria-label="Selected jobs" hidden>
-          <button class="preview-close" id="preview-close" type="button" aria-label="Close job preview">×</button>
-          <div id="preview-content"></div>
-        </aside>
-        <div class="map-attribution">© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>
+        <section class="remote-results" id="remote-results" hidden aria-labelledby="remote-results-title"><div class="remote-results-header"><h2 id="remote-results-title">Remote, anywhere</h2><button id="close-remote-results" type="button" aria-label="Close remote jobs">×</button></div><p id="remote-results-count"></p><div id="remote-results-list"></div></section>
+        <aside class="job-preview" id="job-preview" aria-live="polite" aria-label="Selected jobs" hidden><header class="preview-header"><div><p class="preview-eyebrow">Map results</p><p class="preview-result-count" id="preview-result-count"></p></div><button class="preview-close" id="preview-close" type="button" aria-label="Close job preview">×</button></header><div class="preview-tools"><label for="preview-sort">Sort</label><select id="preview-sort"><option value="relevance">Relevance</option><option value="title">Title A–Z</option><option value="company">Company A–Z</option></select></div><div id="preview-content"></div></aside>
       </section>
     </main>
-
     <footer class="site-footer"><span>© NerdGigs</span><a href="https://www.nerdgigs.com/">Back to NerdGigs</a><span class="footer-note">A geographic view of the NerdGigs job board</span></footer>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-    <script type="module" src="js/app.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script><script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script><script type="module" src="js/app.js"></script>
   </body>
 </html>

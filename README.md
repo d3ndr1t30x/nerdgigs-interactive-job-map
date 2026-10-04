@@ -1,6 +1,6 @@
 # NerdGigs Interactive Job Map
 
-A small, static, map-first companion to [NerdGigs](https://www.nerdgigs.com/). It loads normalized job records from `data/jobs.json`, maps jobs with coordinates, keeps global remote listings in the count without inventing locations, and links every preview back to its canonical NerdGigs listing. The UI uses a violet accent palette to match the updated NerdGigs visual direction.
+A small, static, map-first companion to [NerdGigs](https://www.nerdgigs.com/). It loads normalized job records from `data/jobs.json`, maps location-bound jobs, keeps remote roles in a separate “Remote, anywhere” list, and links every preview back to its canonical NerdGigs listing. The UI uses a violet accent palette to match the updated NerdGigs visual direction.
 
 ## Run locally
 
@@ -10,7 +10,7 @@ Because browsers block `fetch()` from `file://` pages, serve the folder with any
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster from unpkg, OpenStreetMap tiles, and the public Nominatim geocoder.
+Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster from unpkg, CARTO Positron-style tiles, and the public Nominatim geocoder.
 
 ## Project map
 
@@ -30,7 +30,7 @@ Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster fro
 
 The repository includes `.github/workflows/sync-feed.yml`. Once GitHub Actions is enabled, it fetches `https://www.nerdgigs.com/jobs.rss` hourly, falls back to `https://www.nerdgigs.com/jobs.xml`, normalizes the items with `scripts/sync-feed.py`, and commits updated `data/jobs.json`. GitHub Pages then serves the latest committed data without requiring the browser to bypass CORS. Run it immediately with **Actions → Sync NerdGigs feed → Run workflow**.
 
-Markers pulse by work mode: red is on-site, blue is remote, and purple is hybrid. When the feed names a city, country, or region but does not provide coordinates, the sync assigns a stable, small offset near that location's capital/city so listings remain visible without suggesting an exact address. Truly worldwide or unspecified roles use a stable approximate world hub so every listing remains discoverable on the map.
+Markers pulse by work mode: red/square is on-site and purple/diamond is hybrid; approximate locations use a dashed outline. Remote roles are deliberately not pinned to an arbitrary city and are shown in the separate “Remote, anywhere” list. When a location-bound feed item names a city, country, or region but does not provide coordinates, the sync assigns a stable, small offset near that location's capital/city without suggesting an exact address.
 
 The browser should not fetch NerdGigs RSS/XML directly: the current feed does not expose browser CORS headers. The included GitHub Action is the recommended static-site sync. Other valid options are:
 
@@ -52,6 +52,6 @@ If the app is published under a repository subpath, keep data and module URLs re
 ## External services and licensing
 
 - Leaflet and Leaflet.markercluster are open-source libraries loaded from unpkg.
-- Map tiles come from OpenStreetMap contributors. Keep the visible attribution in place and review tile usage policy before production scale.
+- Map tiles come from CARTO’s light basemap on OpenStreetMap data. Keep the visible OpenStreetMap and CARTO attribution in place and review CARTO’s current basemap terms/usage limits before production scale.
 - Location search uses the public Nominatim service. It is rate-limited and has usage requirements; for higher volume, configure a compliant provider behind `js/search.js` and do not expose private keys in client code.
 - Job links point to NerdGigs and are mock examples until replaced by the real normalized feed.
