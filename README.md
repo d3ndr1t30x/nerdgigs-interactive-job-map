@@ -30,6 +30,8 @@ Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster fro
 
 The repository includes `.github/workflows/sync-feed.yml`. Once GitHub Actions is enabled, it fetches `https://www.nerdgigs.com/jobs.rss` hourly, falls back to `https://www.nerdgigs.com/jobs.xml`, normalizes the items with `scripts/sync-feed.py`, and commits updated `data/jobs.json`. GitHub Pages then serves the latest committed data without requiring the browser to bypass CORS. Run it immediately with **Actions → Sync NerdGigs feed → Run workflow**.
 
+Markers pulse by work mode: red is on-site, blue is remote, and purple is hybrid. When the feed names a city, country, or region but does not provide coordinates, the sync assigns a stable, small offset near that location's capital/city so listings remain visible without suggesting an exact address. Truly worldwide roles remain counted but unmapped.
+
 The browser should not fetch NerdGigs RSS/XML directly: the current feed does not expose browser CORS headers. The included GitHub Action is the recommended static-site sync. Other valid options are:
 
 1. Have the existing NerdGigs importer periodically generate this JSON file.

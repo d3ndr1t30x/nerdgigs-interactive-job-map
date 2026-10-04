@@ -71,13 +71,19 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
 .leaflet-control-zoom a { color: var(--color-text) !important; border: 0 !important; background: rgba(255,255,255,.95) !important; }
 .leaflet-control-zoom a:first-child { border-radius: 8px 8px 0 0; }
 .leaflet-control-zoom a:last-child { border-radius: 0 0 8px 8px; }
-.leaflet-marker-icon.job-pin { display: grid; place-items: center; width: 32px !important; height: 32px !important; border: 3px solid white; border-radius: 50% 50% 50% 0; background: var(--color-accent); box-shadow: 0 4px 12px rgba(100, 39, 39, .28); transform: rotate(-45deg); }
-.leaflet-marker-icon.job-pin::after { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: white; }
+.leaflet-marker-icon.job-pin { width: 16px !important; height: 16px !important; border: 2px solid white; border-radius: 50%; background: var(--pin-color, var(--color-accent)); box-shadow: 0 0 0 0 color-mix(in srgb, var(--pin-color, var(--color-accent)) 55%, transparent); animation: job-pulse 1.8s ease-out infinite; }
+.leaflet-marker-icon.job-pin-remote { --pin-color: #2563eb; }
+.leaflet-marker-icon.job-pin-hybrid { --pin-color: #7c3aed; }
+.leaflet-marker-icon.job-pin-onsite { --pin-color: #dc2626; }
+@keyframes job-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--pin-color, var(--color-accent)) 55%, transparent); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: rgba(124, 58, 237, .17); }
 .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background: var(--color-accent); color: white; font-weight: 750; }
 .map-legend, .locate-button, .map-attribution { position: absolute; z-index: 500; }
-.map-legend { left: 18px; bottom: 18px; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid rgba(0,0,0,.07); border-radius: 9px; background: rgba(255,255,255,.94); box-shadow: var(--shadow-soft); color: var(--color-muted); font-size: 11px; font-weight: 600; }
+.map-legend { left: 18px; bottom: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border: 1px solid rgba(0,0,0,.07); border-radius: 9px; background: rgba(255,255,255,.94); box-shadow: var(--shadow-soft); color: var(--color-muted); font-size: 11px; font-weight: 600; }
 .legend-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--color-accent); }
+.legend-onsite { background: #dc2626; }
+.legend-remote { background: #2563eb; }
+.legend-hybrid { background: #7c3aed; }
 .legend-divider { width: 1px; height: 13px; background: var(--color-border); }
 .locate-button { right: 18px; bottom: 18px; padding: 10px 13px; border: 1px solid rgba(0,0,0,.07); border-radius: 9px; background: rgba(255,255,255,.94); box-shadow: var(--shadow-soft); color: var(--color-text); cursor: pointer; font-size: 13px; font-weight: 700; }
 .locate-button:hover { background: white; }

@@ -44,4 +44,4 @@ export function createMap(elementId) {
 
   return { map, cluster };
 }
-export function renderMarkers(mapState, jobs, onSelect) { mapState.cluster.clearLayers(); jobs.filter(job => job.hasCoordinates).forEach(job => { const icon = L.divIcon({ className: 'job-pin', iconSize: [32, 32], iconAnchor: [16, 30], popupAnchor: [0, -28] }); const marker = L.marker([job.latitude, job.longitude], { icon, title: job.title, alt: `${job.title} at ${job.company}` }); marker.on('click', () => onSelect(job)); mapState.cluster.addLayer(marker); }); }
+export function renderMarkers(mapState, jobs, onSelect) { mapState.cluster.clearLayers(); jobs.filter(job => job.hasCoordinates).forEach(job => { const icon = L.divIcon({ className: `job-pin job-pin-${job.workMode}`, iconSize: [16, 16], iconAnchor: [8, 8], popupAnchor: [0, -10] }); const marker = L.marker([job.latitude, job.longitude], { icon, title: job.title, alt: `${job.title} at ${job.company}` }); marker.on('click', () => onSelect(job)); mapState.cluster.addLayer(marker); }); }

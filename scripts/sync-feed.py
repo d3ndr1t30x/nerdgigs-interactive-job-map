@@ -19,6 +19,13 @@ FEED_URLS = [
 ]
 OUTPUT = Path(__file__).resolve().parents[1] / "data" / "jobs.json"
 
+LOCATION_POINTS = {
+    "australia": (-35.2809, 149.1300), "sydney": (-33.8688, 151.2093), "melbourne": (-37.8136, 144.9631), "brisbane": (-27.4698, 153.0251), "new zealand": (-41.2866, 174.7756), "wellington": (-41.2866, 174.7756),
+    "united kingdom": (51.5074, -0.1278), "uk": (51.5074, -0.1278), "london": (51.5074, -0.1278), "manchester": (53.4808, -2.2426), "oxford": (51.7520, -1.2577),
+    "united states": (38.9072, -77.0369), "usa": (38.9072, -77.0369), "new york": (40.7128, -74.0060), "san francisco": (37.7749, -122.4194), "austin": (30.2672, -97.7431), "chicago": (41.8781, -87.6298), "los angeles": (34.0522, -118.2437), "seattle": (47.6062, -122.3321),
+    "canada": (45.4215, -75.6972), "toronto": (43.6532, -79.3832), "vancouver": (49.2827, -123.1207), "india": (28.6139, 77.2090), "new delhi": (28.6139, 77.2090), "japan": (35.6762, 139.6503), "tokyo": (35.6762, 139.6503), "singapore": (1.3521, 103.8198), "germany": (52.5200, 13.4050), "berlin": (52.5200, 13.4050), "france": (48.8566, 2.3522), "paris": (48.8566, 2.3522), "netherlands": (52.3676, 4.9041), "amsterdam": (52.3676, 4.9041), "switzerland": (46.9480, 7.4474), "europe": (50.8503, 4.3517), "emea": (51.5074, -0.1278), "apac": (1.3521, 103.8198),
+}
+
 
 def clean(value: str | None) -> str:
     value = html.unescape(html.unescape(value or ""))
@@ -81,6 +88,17 @@ def infer_employment(text: str) -> str:
     return "Full-time"
 
 
+def approximate_point(text: str, identifier: str) -> tuple[float | None, float | None, str]:
+    lower = text.lower()
+    for hint, point in sorted(LOCATION_POINTS.items(), key=lambda pair: len(pair[0]), reverse=True):
+        if re.search(rf"(?<![a-z]){re.escape(hint)}(?![a-z])", lower):
+            seed = sum(ord(char) for char in identifier)
+            lat = point[0] + ((seed % 17) - 8) / 100
+            lon = point[1] + (((seed // 17) % 17) - 8) / 100
+            return round(lat, 5), round(lon, 5), hint.title()
+    return None, None, "Anywhere in the World"
+
+
 def normalize(item: ET.Element) -> dict:
     raw_title = child_text(item, "title")
     title, company = infer_title_and_company(raw_title)
@@ -89,16 +107,17 @@ def normalize(item: ET.Element) -> dict:
     description = child_text(item, "description")
     combined = f"{title} {company} {description}"
     work_mode, remote = infer_mode(combined)
-    # The current RSS contract does not expose reliable coordinates. Keep these
-    # null rather than inventing a map point or dropping a role on Null Island.
+    latitude, longitude, location = approximate_point(f"{title} {company}", guid)
+    if not latitude and not remote:
+        location = "Location not specified in RSS feed"
     return {
         "id": guid,
         "title": title,
         "company": company,
-        "location": "Anywhere in the World" if remote else "Location not specified in RSS feed",
-        "latitude": None,
-        "longitude": None,
-        "geographicScope": "global" if remote else "unknown",
+        "location": location,
+        "latitude": latitude,
+        "longitude": longitude,
+        "geographicScope": "global" if remote and not latitude else ("approximate" if latitude else "unknown"),
         "url": link,
         "employmentType": infer_employment(combined),
         "workMode": work_mode,
