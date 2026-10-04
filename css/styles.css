@@ -68,24 +68,25 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(22px, 2.4vw, 
 
 .map-stage { position: relative; flex: 1; min-height: 0; margin: 0 16px; overflow: hidden; border-radius: 16px 16px 0 0; background: var(--color-map); box-shadow: var(--shadow-soft); }
 #map { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--color-map); }
-/* Keep the essential Leaflet layout intact even if its CDN stylesheet is slow. */
-.leaflet-container { overflow: hidden; }
-.leaflet-map-pane, .leaflet-tile-pane, .leaflet-overlay-pane, .leaflet-shadow-pane, .leaflet-marker-pane, .leaflet-tooltip-pane, .leaflet-popup-pane { position: absolute; inset: 0; }
-.leaflet-tile-container { position: absolute; left: 0; top: 0; }
-.leaflet-tile { position: absolute; left: 0; top: 0; max-width: none !important; max-height: none !important; user-select: none; }
-.leaflet-container { font-family: var(--font-body); background: var(--color-map); }
-.leaflet-control-zoom { margin: 18px !important; border: 0 !important; box-shadow: var(--shadow-soft) !important; }
-.leaflet-control-zoom a { color: var(--color-text) !important; border: 0 !important; background: rgba(255,255,255,.95) !important; }
-.leaflet-control-zoom a:first-child { border-radius: 8px 8px 0 0; }
-.leaflet-control-zoom a:last-child { border-radius: 0 0 8px 8px; }
-.leaflet-marker-icon.job-pin { width: 16px !important; height: 16px !important; border: 2px solid white; border-radius: 50%; background: var(--pin-color, var(--color-accent)); box-shadow: 0 0 0 0 color-mix(in srgb, var(--pin-color, var(--color-accent)) 55%, transparent); animation: job-pulse 1.8s ease-out infinite; }
-.leaflet-marker-icon.job-pin-remote { --pin-color: #2563eb; }
-.leaflet-marker-icon.job-pin-hybrid { --pin-color: #7c3aed; }
-.leaflet-marker-icon.job-pin-onsite { --pin-color: #dc2626; }
-.leaflet-marker-icon.job-pin-onsite { border-radius: 3px; }
-.leaflet-marker-icon.job-pin-hybrid { transform: rotate(45deg); border-radius: 3px; }
-.leaflet-marker-icon.job-pin-approximate { border-style: dashed; }
-@keyframes job-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--pin-color, var(--color-accent)) 55%, transparent); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.local-map-svg { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.local-map-svg:active { cursor: grabbing; }
+.local-map-ocean { fill: #edf3f1; }
+.local-map-grid { opacity: .5; }
+.local-map-land { fill: #d2ddd9; stroke: #b8c8c3; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.local-map-markers { pointer-events: none; }
+.local-map-marker { pointer-events: auto; cursor: pointer; outline: none; }
+.local-map-marker:focus circle, .local-map-marker:focus rect, .local-map-marker:focus polygon { stroke: #171717; stroke-width: 3; }
+.local-map-controls { position: absolute; top: 18px; right: 18px; z-index: 500; display: flex; flex-direction: column; box-shadow: var(--shadow-soft); }
+.local-map-controls button { width: 36px; height: 34px; border: 0; border-bottom: 1px solid var(--color-border); background: rgba(255,255,255,.95); color: var(--color-text); cursor: pointer; font-size: 22px; line-height: 1; }
+.local-map-controls button:first-child { border-radius: 8px 8px 0 0; }
+.local-map-controls button:last-child { border-bottom: 0; border-radius: 0 0 8px 8px; }
+.local-map-controls button:hover { background: white; }
+.local-pin circle, .local-pin rect, .local-pin polygon { fill: #dc2626; stroke: white; stroke-width: 2; vector-effect: non-scaling-stroke; animation: local-pulse 1.8s ease-out infinite; }
+.local-pin-hybrid circle, .local-pin-hybrid rect, .local-pin-hybrid polygon { fill: #7c3aed; }
+.local-pin-approximate circle, .local-pin-approximate rect, .local-pin-approximate polygon { stroke-dasharray: 4 3; }
+.local-cluster circle, .local-cluster rect, .local-cluster polygon { fill: #4b5563; stroke: white; stroke-width: 3; vector-effect: non-scaling-stroke; }
+.local-cluster text { fill: white; font: 700 13px var(--font-body); pointer-events: none; }
+@keyframes local-pulse { 0% { opacity: 1; } 70% { opacity: .58; } 100% { opacity: 1; } }
 .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: rgba(70, 70, 80, .16); }
 .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background: #4b5563; color: white; font-weight: 750; }
 .map-legend, .locate-button, .map-attribution { position: absolute; z-index: 500; }

@@ -10,7 +10,7 @@ Because browsers block `fetch()` from `file://` pages, serve the folder with any
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster from unpkg, CARTO Positron-style tiles, and the public Nominatim geocoder.
+Open `http://localhost:8000`. The browser loads a bundled SVG world map and a bundled city-search index. No map tile, map JavaScript, or geocoding API is requested at runtime.
 
 ## Project map
 
@@ -18,9 +18,10 @@ Open `http://localhost:8000`. The app uses Leaflet and Leaflet.markercluster fro
 - `css/styles.css` — NerdGigs-matching design tokens and responsive UI.
 - `js/app.js` — state, UI events, filtering, and rendering orchestration.
 - `js/jobs.js` — data loading, normalization, and filtering.
-- `js/map.js` — Leaflet map and marker-cluster rendering.
-- `js/search.js` — replaceable geocoding abstraction.
-- `js/config.js` — data, tile, and geocoder configuration.
+- `js/map.js` — local SVG map, pan/zoom, and marker-cluster rendering.
+- `js/search.js` — bundled city/capital search index.
+- `js/config.js` — data and map configuration.
+- `assets/world-map.svg` — bundled world silhouette used by the map.
 - `js/services/location-data.js` — future relocation-data boundary.
 - `data/jobs.json` — local mock normalized feed.
 
@@ -51,7 +52,6 @@ If the app is published under a repository subpath, keep data and module URLs re
 
 ## External services and licensing
 
-- Leaflet and Leaflet.markercluster are open-source libraries loaded from unpkg.
-- Map tiles come from CARTO’s light basemap on OpenStreetMap data. Keep the visible OpenStreetMap and CARTO attribution in place and review CARTO’s current basemap terms/usage limits before production scale.
-- Location search uses the public Nominatim service. It is rate-limited and has usage requirements; for higher volume, configure a compliant provider behind `js/search.js` and do not expose private keys in client code.
+- The map has no runtime map-tile, map-library, or geocoding dependency. Its bundled SVG is a deliberately lightweight world silhouette, not a street-level navigation map.
+- The only external data connection is the server-side GitHub Action that polls NerdGigs RSS/XML hourly and commits `data/jobs.json`.
 - Job links point to NerdGigs and are mock examples until replaced by the real normalized feed.
