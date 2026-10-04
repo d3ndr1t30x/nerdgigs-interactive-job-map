@@ -60,7 +60,7 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
 .advanced-filters select { border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 7px 25px 7px 9px; background: white; color: var(--color-text); }
 
 .map-stage { position: relative; flex: 1; min-height: min(660px, calc(100vh - 304px)); margin: 0 16px; overflow: hidden; border-radius: 16px 16px 0 0; background: var(--color-map); box-shadow: var(--shadow-soft); }
-#map { position: absolute; inset: 0; background: var(--color-map); }
+#map { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--color-map); }
 .leaflet-container { font-family: var(--font-body); background: var(--color-map); }
 .leaflet-control-zoom { margin: 18px !important; border: 0 !important; box-shadow: var(--shadow-soft) !important; }
 .leaflet-control-zoom a { color: var(--color-text) !important; border: 0 !important; background: rgba(255,255,255,.95) !important; }
@@ -68,7 +68,7 @@ h1 { margin: 0; font-family: var(--font-display); font-size: clamp(25px, 3vw, 37
 .leaflet-control-zoom a:last-child { border-radius: 0 0 8px 8px; }
 .leaflet-marker-icon.job-pin { display: grid; place-items: center; width: 32px !important; height: 32px !important; border: 3px solid white; border-radius: 50% 50% 50% 0; background: var(--color-accent); box-shadow: 0 4px 12px rgba(100, 39, 39, .28); transform: rotate(-45deg); }
 .leaflet-marker-icon.job-pin::after { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: white; }
-.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: rgba(239, 91, 91, .17); }
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: rgba(124, 58, 237, .17); }
 .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background: var(--color-accent); color: white; font-weight: 750; }
 .map-legend, .locate-button, .map-attribution { position: absolute; z-index: 500; }
 .map-legend { left: 18px; bottom: 18px; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid rgba(0,0,0,.07); border-radius: 9px; background: rgba(255,255,255,.94); box-shadow: var(--shadow-soft); color: var(--color-muted); font-size: 11px; font-weight: 600; }
